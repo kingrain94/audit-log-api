@@ -1,0 +1,210 @@
+version: '3'
+
+vars:
+  DOCKER_COMPOSE: docker-compose
+  BIN_DIR: bin
+
+tasks:
+  init-localstack:
+    desc: Initialize LocalStack services
+    cmds:
+      - ./scripts/init-localstack.sh
+
+  build:
+    desc: Build audit-log-api
+    cmds:
+      - echo "Building audit-log-api..."
+      - go build -o {{.BIN_DIR}}/audit-log-api ./cmd/api/main.go
+    generates:
+      - "{{.BIN_DIR}}/audit-log-api"
+    sources:
+      - "./cmd/api/**/*.go"
+      - "./internal/**/*.go"
+      - "./pkg/**/*.go"
+      - "go.mod"
+      - "go.sum"
+
+  build-archive-worker:
+    desc: Build archive-worker
+    cmds:
+      - echo "Building archive-worker..."
+      - go build -o {{.BIN_DIR}}/archive_worker ./cmd/archive_worker
+    generates:
+      - "{{.BIN_DIR}}/archive_worker"
+    sources:
+      - "./cmd/archive_worker/**/*.go"
+      - "./internal/**/*.go"
+      - "./pkg/**/*.go"
+      - "go.mod"
+      - "go.sum"
+
+  build-cleanup-worker:
+    desc: Build cleanup-worker
+    cmds:
+      - echo "Building cleanup-worker..."
+      - go build -o {{.BIN_DIR}}/cleanup_worker ./cmd/cleanup_worker
+    generates:
+      - "{{.BIN_DIR}}/cleanup_worker"
+    sources:
+      - "./cmd/cleanup_worker/**/*.go"
+      - "./internal/**/*.go"
+      - "./pkg/**/*.go"
+      - "go.mod"
+      - "go.sum"
+
+  build-index-worker:
+    desc: Build index-worker
+    cmds:
+      - echo "Building index-worker..."
+      - go build -o {{.BIN_DIR}}/index_worker ./cmd/index_worker
+    generates:
+      - "{{.BIN_DIR}}/index_worker"
+    sources:
+      - "./cmd/index_worker/**/*.go"
+      - "./internal/**/*.go"
+      - "./pkg/**/*.go"
+      - "go.mod"
+      - "go.sum"
+
+  build-all:
+    desc: Build all components
+    deps:
+      - build
+      - build-index-worker
+      - build-archive-worker
+      - build-cleanup-worker
+
+  run-api:
+    desc: Run the API server
+    cmds:
+      - go run ./cmd/api/main.go
+    sources:
+      - "./cmd/api/**/*.go"
+      - "./internal/**/*.go"
+      - "./pkg/**/*.go"
+
+  run-index-worker:
+    desc: Run the index worker
+    cmds:
+      - go run ./cmd/index_worker
+    sources:
+      - "./cmd/index_worker/**/*.go"
+      - "./internal/**/*.go"
+      - "./pkg/**/*.go"
+
+  run-archive-worker:
+    desc: Run the archive worker
+    cmds:
+      - go run ./cmd/archive_worker
+    sources:
+      - "./cmd/archive_worker/**/*.go"
+      - "./internal/**/*.go"
+      - "./pkg/**/*.go"
+
+  run-cleanup-worker:
+    desc: Run the cleanup worker
+    cmds:
+      - go run ./cmd/cleanup_worker
+    sources:
+      - "./cmd/cleanup_worker/**/*.go"
+      - "./internal/**/*.go"
+      - "./pkg/**/*.go"
+
+  test:
+    desc: Run all tests
+    cmds:
+      - go test -v ./...
+    sources:
+      - "./**/*.go"
+
+  test-performance:
+    desc: Run performance benchmarks
+    cmds:
+      - go test -v -bench=. -benchmem ./test/integration/
+    sources:
+      - "./test/integration/**/*.go"
+
+  load-test:
+    desc: Run load testing against running API
+    cmds:
+      - ./scripts/load_test.sh
+    deps:
+      - build
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - rm -rf {{.BIN_DIR}}/
+
+  docker-up:
+    desc: Start Docker services
+    cmds:
+      - echo "Starting Docker services..."
+      - cd deployments && {{.DOCKER_COMPOSE}} up -d
+
+  docker-clear:
+    desc: Stop Docker services and remove volumes
+    cmds:
+      - echo "Stopping Docker services..."
+      - cd deployments && {{.DOCKER_COMPOSE}} down -v
+
+  migrate-down:
+    desc: Roll back database migrations
+    cmds:
+      - echo "Rolling back database migrations..."
+      - sql-migrate down
+
+  migrate-up:
+    desc: Apply database migrations
+    cmds:
+      - sql-migrate up -config=configs/dbconfig.yml
+
+  deps:
+    desc: Install and tidy Go dependencies
+    cmds:
+      - echo "Installing dependencies..."
+      - go mod download
+      - go mod tidy
+
+  lint:
+    desc: Run linter and formatter
+    cmds:
+      - echo "Running linter..."
+      - go vet ./...
+      - go fmt ./...
+
+  generate-token:
+    desc: Generate authentication token
+    cmds:
+      - go run ./scripts/generate_token.go -user=11111111-1111-1111-1111-111111111111 -roles=admin,user,auditor -tenant=11111111-1111-1111-1111-111111111111
+
+  swag:
+    desc: Generate Swagger documentation
+    cmds:
+      - echo "Generating Swagger documentation..."
+      - swag init -g ./cmd/api/main.go --parseVendor true --exclude db,deployment,scripts,vendor
+      - swagger2openapi ./docs/swagger.yaml -o ./docs/openapi.yaml
+      - swagger2openapi ./docs/swagger.json -o ./docs/openapi.json
+
+  # Convenience tasks
+  dev:
+    desc: Start development environment (Docker + API)
+    deps:
+      - docker-up
+    cmds:
+      - task: run-api
+
+  setup:
+    desc: Complete project setup
+    deps:
+      - deps
+      - docker-up
+      - migrate-up
+
+  all:
+    desc: Build everything and run tests
+    deps:
+      - deps
+      - lint
+      - test
+      - build-all
