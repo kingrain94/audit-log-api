@@ -3,3 +3,6 @@
 
 # Project specific
 requirement.md
+
+# Compiled binaries
+bin/

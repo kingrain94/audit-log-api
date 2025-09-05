@@ -23,7 +23,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"tenant_id\": \"11111111-1111-1111-1111-111111111111\",\n  \"user_id\": \"user-1000\",\n  \"session_id\": \"sess-9999\",\n  \"action\": \"DELETE\",\n  \"resource_type\": \"user\",\n  \"resource_id\": \"42\",\n  \"message\": \"User profile updated: changed email and phone number\",\n  \"metadata\": {\n    \"request_id\": \"req-5678\",\n    \"correlation_id\": \"corr-7890\",\n    \"source\": \"web-portal\"\n  },\n  \"before_state\": {\n    \"email\": \"old@example.com\",\n    \"phone\": \"123-456-7890\",\n    \"name\": \"Alice\"\n  },\n  \"after_state\": {\n    \"email\": \"alice.new@example.com\",\n    \"phone\": \"987-654-3210\",\n    \"name\": \"Alice\"\n  },\n  \"severity\": \"INFO\",\n  \"timestamp\": \"2025-06-16T14:30:12Z\",\n  \"ip_address\": \"192.168.1.100\",\n  \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0\"\n}"
+					"raw": "{\n  \"tenant_id\": \"22222222-2222-2222-2222-222222222222\",\n  \"user_id\": \"user-5047\",\n  \"session_id\": \"sess-abc123def\",\n  \"action\": \"CREATE\",\n  \"resource_type\": \"document\",\n  \"resource_id\": \"doc-789\",\n  \"message\": \"New document created with sensitive financial data\",\n  \"metadata\": {\n    \"request_id\": \"req-9876543\",\n    \"correlation_id\": \"corr-xyz456\",\n    \"source\": \"mobile-app\",\n    \"file_size\": 2048576,\n    \"file_type\": \"application/pdf\"\n  },\n  \"before_state\": null,\n  \"after_state\": {\n    \"title\": \"Q4 Financial Report 2024\",\n    \"category\": \"financial\",\n    \"access_level\": \"confidential\",\n    \"created_by\": \"user-5047\"\n  },\n  \"severity\": \"CRITICAL\",\n  \"timestamp\": \"2025-09-15T09:45:33Z\",\n  \"ip_address\": \"10.0.2.45\",\n  \"user_agent\": \"AuditApp/2.1.0 (iPhone; iOS 17.1; Scale/3.00)\"\n}"
 				},
 				"url": {
 					"raw": "localhost:10000/api/v1/logs",
@@ -51,7 +51,7 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:10000/api/v1/logs?start_time=2025-05-01&end_time=2025-08-20&user_id=user-1000",
+					"raw": "localhost:10000/api/v1/logs?start_time=2025-09-01&end_time=2025-09-30&user_id=user-5047&action=CREATE&resource_type=document",
 					"host": [
 						"localhost"
 					],
@@ -64,15 +64,23 @@
 					"query": [
 						{
 							"key": "start_time",
-							"value": "2025-05-01"
+							"value": "2025-09-01"
 						},
 						{
 							"key": "end_time",
-							"value": "2025-08-20"
+							"value": "2025-09-30"
 						},
 						{
 							"key": "user_id",
-							"value": "user-1000"
+							"value": "user-5047"
+						},
+						{
+							"key": "action",
+							"value": "CREATE"
+						},
+						{
+							"key": "resource_type",
+							"value": "document"
 						}
 					]
 				}
@@ -90,7 +98,7 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:10000/api/v1/logs/986ef892-3b77-47df-aeae-6e3e76c17f42",
+					"raw": "localhost:10000/api/v1/logs/f47ac10b-58cc-4372-a567-0e02b2c3d479",
 					"host": [
 						"localhost"
 					],
@@ -99,7 +107,7 @@
 						"api",
 						"v1",
 						"logs",
-						"986ef892-3b77-47df-aeae-6e3e76c17f42"
+						"f47ac10b-58cc-4372-a567-0e02b2c3d479"
 					]
 				}
 			},
@@ -116,7 +124,7 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:10000/api/v1/logs/export?format=json&start_time=2025-08-14T21:29:12Z&end_time=2025-08-19T21:32:12Z",
+					"raw": "localhost:10000/api/v1/logs/export?format=csv&start_time=2025-09-01T00:00:00Z&end_time=2025-09-30T23:59:59Z&severity=CRITICAL",
 					"host": [
 						"localhost"
 					],
@@ -130,15 +138,19 @@
 					"query": [
 						{
 							"key": "format",
-							"value": "json"
+							"value": "csv"
 						},
 						{
 							"key": "start_time",
-							"value": "2025-08-14T21:29:12Z"
+							"value": "2025-09-01T00:00:00Z"
 						},
 						{
 							"key": "end_time",
-							"value": "2025-08-19T21:32:12Z"
+							"value": "2025-09-30T23:59:59Z"
+						},
+						{
+							"key": "severity",
+							"value": "CRITICAL"
 						}
 					]
 				}
@@ -156,7 +168,7 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:10000/api/v1/logs/stats?start_time=2025-08-14T21:29:12Z&end_time=2025-08-19T21:32:12Z",
+					"raw": "localhost:10000/api/v1/logs/stats?start_time=2025-09-01T00:00:00Z&end_time=2025-09-30T23:59:59Z&group_by=action,resource_type",
 					"host": [
 						"localhost"
 					],
@@ -170,11 +182,15 @@
 					"query": [
 						{
 							"key": "start_time",
-							"value": "2025-08-14T21:29:12Z"
+							"value": "2025-09-01T00:00:00Z"
 						},
 						{
 							"key": "end_time",
-							"value": "2025-08-19T21:32:12Z"
+							"value": "2025-09-30T23:59:59Z"
+						},
+						{
+							"key": "group_by",
+							"value": "action,resource_type"
 						}
 					]
 				}
@@ -197,7 +213,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "[\n    {\n  \"tenant_id\": \"11111111-1111-1111-1111-111111111111\",\n  \"user_id\": \"user43\",\n  \"session_id\": \"sess-9999\",\n  \"action\": \"UPDATE\",\n  \"resource_type\": \"user\",\n  \"resource_id\": \"42\",\n  \"message\": \"User profile updated: changed email and phone number\",\n  \"metadata\": {\n    \"request_id\": \"req-5678\",\n    \"correlation_id\": \"corr-7890\",\n    \"source\": \"web-portal\"\n  },\n  \"before_state\": {\n    \"email\": \"old@example.com\",\n    \"phone\": \"123-456-7890\",\n    \"name\": \"Alice\"\n  },\n  \"after_state\": {\n    \"email\": \"alice.new@example.com\",\n    \"phone\": \"987-654-3210\",\n    \"name\": \"Alice\"\n  },\n  \"severity\": \"INFO\",\n  \"timestamp\": \"2025-07-16T14:30:12Z\",\n  \"ip_address\": \"192.168.1.100\",\n  \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0\"\n},\n{\n  \"tenant_id\": \"11111111-1111-1111-1111-111111111111\",\n  \"user_id\": \"user44\",\n  \"session_id\": \"sess-9999\",\n  \"action\": \"UPDATE\",\n  \"resource_type\": \"user\",\n  \"resource_id\": \"42\",\n  \"message\": \"User profile updated: changed email and phone number\",\n  \"metadata\": {\n    \"request_id\": \"req-5678\",\n    \"correlation_id\": \"corr-7890\",\n    \"source\": \"web-portal\"\n  },\n  \"before_state\": {\n    \"email\": \"old@example.com\",\n    \"phone\": \"123-456-7890\",\n    \"name\": \"Alice\"\n  },\n  \"after_state\": {\n    \"email\": \"alice.new@example.com\",\n    \"phone\": \"987-654-3210\",\n    \"name\": \"Alice\"\n  },\n  \"severity\": \"INFO\",\n  \"timestamp\": \"2025-07-16T14:30:12Z\",\n  \"ip_address\": \"192.168.1.100\",\n  \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0\"\n}\n]"
+					"raw": "[\n  {\n    \"tenant_id\": \"33333333-3333-3333-3333-333333333333\",\n    \"user_id\": \"admin-8901\",\n    \"session_id\": \"sess-xyz789pqr\",\n    \"action\": \"DELETE\",\n    \"resource_type\": \"user_account\",\n    \"resource_id\": \"acc-12345\",\n    \"message\": \"User account permanently deleted due to GDPR request\",\n    \"metadata\": {\n      \"request_id\": \"req-gdpr-001\",\n      \"correlation_id\": \"corr-delete-789\",\n      \"source\": \"admin-panel\",\n      \"reason\": \"gdpr_compliance\",\n      \"approved_by\": \"legal-team\"\n    },\n    \"before_state\": {\n      \"username\": \"john.doe@company.com\",\n      \"status\": \"active\",\n      \"last_login\": \"2025-09-15T10:30:00Z\",\n      \"role\": \"employee\"\n    },\n    \"after_state\": null,\n    \"severity\": \"CRITICAL\",\n    \"timestamp\": \"2025-09-20T16:22:45Z\",\n    \"ip_address\": \"172.16.0.25\",\n    \"user_agent\": \"AdminPortal/3.2.1 (Windows NT 10.0; Win64; x64)\"\n  },\n  {\n    \"tenant_id\": \"33333333-3333-3333-3333-333333333333\",\n    \"user_id\": \"system-automated\",\n    \"session_id\": \"sess-auto-backup\",\n    \"action\": \"UPDATE\",\n    \"resource_type\": \"database\",\n    \"resource_id\": \"db-prod-001\",\n    \"message\": \"Automated database backup completed successfully\",\n    \"metadata\": {\n      \"request_id\": \"req-backup-daily\",\n      \"correlation_id\": \"corr-backup-456\",\n      \"source\": \"cron-job\",\n      \"backup_size\": \"2.4GB\",\n      \"backup_location\": \"s3://backups/prod/2025-09-10\"\n    },\n    \"before_state\": {\n      \"last_backup\": \"2025-09-09T02:00:00Z\",\n      \"status\": \"running\"\n    },\n    \"after_state\": {\n      \"last_backup\": \"2025-09-10T02:00:00Z\",\n      \"status\": \"completed\",\n      \"backup_id\": \"bkp-20250910-020000\"\n    },\n    \"severity\": \"INFO\",\n    \"timestamp\": \"2025-09-10T02:15:33Z\",\n    \"ip_address\": \"10.1.1.10\",\n    \"user_agent\": \"BackupService/1.5.2 (Linux; automated)\"\n  },\n  {\n    \"tenant_id\": \"44444444-4444-4444-4444-444444444444\",\n    \"user_id\": \"security-scanner\",\n    \"session_id\": \"sess-security-scan\",\n    \"action\": \"VIEW\",\n    \"resource_type\": \"security_config\",\n    \"resource_id\": \"sec-config-001\",\n    \"message\": \"Security vulnerability scan detected potential issues\",\n    \"metadata\": {\n      \"request_id\": \"req-sec-scan-weekly\",\n      \"correlation_id\": \"corr-vuln-check\",\n      \"source\": \"security-scanner\",\n      \"vulnerabilities_found\": 3,\n      \"scan_type\": \"automated\"\n    },\n    \"before_state\": null,\n    \"after_state\": {\n      \"scan_completed\": true,\n      \"issues_found\": 3,\n      \"severity_levels\": [\"medium\", \"low\", \"low\"]\n    },\n    \"severity\": \"WARNING\",\n    \"timestamp\": \"2025-09-05T14:45:20Z\",\n    \"ip_address\": \"10.0.5.100\",\n    \"user_agent\": \"SecurityScanner/2.8.1 (Ubuntu 22.04; automated)\"\n  }\n]"
 				},
 				"url": {
 					"raw": "localhost:10000/api/v1/logs/bulk",
@@ -226,7 +242,7 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:10000/api/v1/logs/cleanup?before_date=2025-07-16",
+					"raw": "localhost:10000/api/v1/logs/cleanup?before_date=2025-06-01&tenant_id=33333333-3333-3333-3333-333333333333",
 					"host": [
 						"localhost"
 					],
@@ -240,7 +256,11 @@
 					"query": [
 						{
 							"key": "before_date",
-							"value": "2025-07-16"
+							"value": "2025-06-01"
+						},
+						{
+							"key": "tenant_id",
+							"value": "33333333-3333-3333-3333-333333333333"
 						}
 					]
 				}
@@ -314,7 +334,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"name\": \"Test\",\n  \"description\": \"Test tenant\"\n}"
+					"raw": "{\n  \"name\": \"Enterprise Corp\"\n}"
 				},
 				"url": {
 					"raw": "localhost:10000/api/v1/tenants",
